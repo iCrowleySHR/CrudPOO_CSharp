@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🛍️ ProdutosSQL – Sistema de Controle de Produtos  
+# 🛍️ CrudPOO_CSharp – Sistema de Controle de Produtos  
 ### C# · Windows Forms · MySQL · POO · CRUD  
 
 ![C#](https://img.shields.io/badge/C%23-.NET%20Framework-512BD4?logo=csharp)
