@@ -17,19 +17,9 @@ namespace ProdutosSQL
 
         public MySqlConnection AbrirConexao()
         {
-            if (connection.State == ConnectionState.Closed)
-            {
-                connection.Open();
-            }
-            return connection;
-        }
-
-        public void FecharConexao()
-        {
-            if (connection.State == ConnectionState.Open)
-            {
-                connection.Close();
-            }
+            var conn = new MySqlConnection(connectionString);
+            conn.Open();
+            return conn;
         }
     }
 }

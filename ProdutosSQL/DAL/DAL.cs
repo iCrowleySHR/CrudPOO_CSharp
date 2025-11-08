@@ -18,7 +18,7 @@ namespace ProdutosSQL.DAL
         public void Inserir<T>(T entidade)
         {
             Type tipo = typeof(T);
-            string nomeTabela = tipo.Name;
+            string nomeTabela = tipo.Name.ToLower();
             var propriedades = tipo.GetProperties()
                 .Where(p => !p.Name.Equals("Id", StringComparison.OrdinalIgnoreCase)
                          && !p.Name.StartsWith("Id", StringComparison.OrdinalIgnoreCase))
@@ -38,15 +38,14 @@ namespace ProdutosSQL.DAL
                 }
 
                 cmd.ExecuteNonQuery();
-                conexao.FecharConexao();
-            }
+            } 
         }
 
         public List<T> Ler<T>() where T : new()
         {
             List<T> lista = new List<T>();
             Type tipo = typeof(T);
-            string nomeTabela = tipo.Name;
+            string nomeTabela = tipo.Name.ToLower();
 
             string sql = $"SELECT * FROM {nomeTabela}";
 
@@ -54,7 +53,7 @@ namespace ProdutosSQL.DAL
             using (var cmd = new MySqlCommand(sql, conn))
             using (var reader = cmd.ExecuteReader())
             {
-                var propriedades = tipo.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+                var propriedades = tipo.GetProperties();
 
                 while (reader.Read())
                 {
@@ -68,22 +67,19 @@ namespace ProdutosSQL.DAL
                             continue;
 
                         object valor = reader[nomeColuna];
-
                         if (valor != DBNull.Value)
                             prop.SetValue(instancia, Convert.ChangeType(valor, prop.PropertyType));
                     }
 
                     lista.Add(instancia);
                 }
-
-                conexao.FecharConexao();
-            }
+            } 
 
             return lista;
         }
     }
 
-        internal static class MySqlDataReaderExtensions
+    internal static class MySqlDataReaderExtensions
         {
             public static bool HasColumn(this MySqlDataReader reader, string columnName)
             {

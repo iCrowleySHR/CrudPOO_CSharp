@@ -25,14 +25,13 @@ namespace ProdutosSQL
         private void produtosToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FormCadProdutos form = new FormCadProdutos();
-            form.FormClosed += (s, args) => CarregarProdutosNoGrid();
+            form.ProdutoCadastrado += (s, args) => CarregarProdutosNoGrid();
             form.Show();
         }
 
-        private void CarregarProdutosNoGrid()
+        public void CarregarProdutosNoGrid()
         {
             List<Produto> produtos = produtoDAL.CarregarProdutos();
-            MessageBox.Show($"Total de produtos carregados: {produtos.Count}");
             dgvProdutos.DataSource = produtos;
 
             dgvProdutos.Columns["IdProduto"].HeaderText = "Código";
@@ -46,7 +45,5 @@ namespace ProdutosSQL
 
             dgvProdutos.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
-
-
     }
 }
