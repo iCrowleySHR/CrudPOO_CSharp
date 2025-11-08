@@ -23,5 +23,15 @@ namespace ProdutosSQL.DAL
         {
             return dal.Ler<Produto>();
         }
+
+        public void Editar(Produto produto)
+        {
+            dal.Editar(produto);
+        }
+
+        public void Excluir(int id)
+        {
+            dal.Excluir<Produto>(id);
+        }
     }
 }

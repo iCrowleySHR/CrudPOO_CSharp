@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProdutosSQL.Models
 {
-    internal class Produto
+    public class Produto
     {
         public int IdProduto { get; set; }
         public string Nome_Produto { get; set; }

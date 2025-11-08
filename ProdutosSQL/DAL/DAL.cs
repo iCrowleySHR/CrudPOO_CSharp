@@ -1,8 +1,8 @@
-﻿using MySql.Data.MySqlClient;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Collections.Generic;
+using MySql.Data.MySqlClient;
 
 namespace ProdutosSQL.DAL
 {
@@ -19,13 +19,14 @@ namespace ProdutosSQL.DAL
         {
             Type tipo = typeof(T);
             string nomeTabela = tipo.Name.ToLower();
+
             var propriedades = tipo.GetProperties()
-                .Where(p => !p.Name.Equals("Id", StringComparison.OrdinalIgnoreCase)
-                         && !p.Name.StartsWith("Id", StringComparison.OrdinalIgnoreCase))
+                .Where(p => !p.Name.StartsWith("Id", StringComparison.OrdinalIgnoreCase))
                 .ToArray();
 
             string colunas = string.Join(", ", propriedades.Select(p => p.Name.ToLower()));
             string parametros = string.Join(", ", propriedades.Select(p => "@" + p.Name.ToLower()));
+
             string sql = $"INSERT INTO {nomeTabela} ({colunas}) VALUES ({parametros})";
 
             using (var conn = conexao.AbrirConexao())
@@ -38,7 +39,7 @@ namespace ProdutosSQL.DAL
                 }
 
                 cmd.ExecuteNonQuery();
-            } 
+            }
         }
 
         public List<T> Ler<T>() where T : new()
@@ -53,7 +54,7 @@ namespace ProdutosSQL.DAL
             using (var cmd = new MySqlCommand(sql, conn))
             using (var reader = cmd.ExecuteReader())
             {
-                var propriedades = tipo.GetProperties();
+                var propriedades = tipo.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
                 while (reader.Read())
                 {
@@ -67,29 +68,81 @@ namespace ProdutosSQL.DAL
                             continue;
 
                         object valor = reader[nomeColuna];
+
                         if (valor != DBNull.Value)
                             prop.SetValue(instancia, Convert.ChangeType(valor, prop.PropertyType));
                     }
 
                     lista.Add(instancia);
                 }
-            } 
+            }
 
             return lista;
+        }
+
+        public void Editar<T>(T entidade)
+        {
+            Type tipo = typeof(T);
+            string nomeTabela = tipo.Name.ToLower();
+
+            var propriedades = tipo.GetProperties()
+                .Where(p => !p.Name.StartsWith("Id", StringComparison.OrdinalIgnoreCase))
+                .ToArray();
+
+            var propId = tipo.GetProperties().FirstOrDefault(p => p.Name.StartsWith("Id", StringComparison.OrdinalIgnoreCase));
+
+            if (propId == null)
+                throw new Exception("A entidade precisa ter uma propriedade de ID.");
+
+            string setClause = string.Join(", ", propriedades.Select(p => $"{p.Name.ToLower()} = @{p.Name.ToLower()}"));
+            string sql = $"UPDATE {nomeTabela} SET {setClause} WHERE {propId.Name.ToLower()} = @{propId.Name.ToLower()}";
+
+            using (var conn = conexao.AbrirConexao())
+            using (var cmd = new MySqlCommand(sql, conn))
+            {
+                foreach (var prop in propriedades)
+                {
+                    object valor = prop.GetValue(entidade) ?? DBNull.Value;
+                    cmd.Parameters.AddWithValue("@" + prop.Name.ToLower(), valor);
+                }
+
+                object valorId = propId.GetValue(entidade);
+                cmd.Parameters.AddWithValue("@" + propId.Name.ToLower(), valorId);
+
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public void Excluir<T>(int id)
+        {
+            Type tipo = typeof(T);
+            string nomeTabela = tipo.Name.ToLower();
+
+            var propId = tipo.GetProperties().FirstOrDefault(p => p.Name.StartsWith("Id", StringComparison.OrdinalIgnoreCase));
+            if (propId == null)
+                throw new Exception("A entidade precisa ter uma propriedade de ID.");
+
+            string sql = $"DELETE FROM {nomeTabela} WHERE {propId.Name.ToLower()} = @id";
+
+            using (var conn = conexao.AbrirConexao())
+            using (var cmd = new MySqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.ExecuteNonQuery();
+            }
         }
     }
 
     internal static class MySqlDataReaderExtensions
+    {
+        public static bool HasColumn(this MySqlDataReader reader, string columnName)
         {
-            public static bool HasColumn(this MySqlDataReader reader, string columnName)
+            for (int i = 0; i < reader.FieldCount; i++)
             {
-                for (int i = 0; i < reader.FieldCount; i++)
-                {
-                    if (reader.GetName(i).Equals(columnName, StringComparison.OrdinalIgnoreCase))
-                        return true;
-                }
-                return false;
+                if (reader.GetName(i).Equals(columnName, StringComparison.OrdinalIgnoreCase))
+                    return true;
             }
+            return false;
         }
-
+    }
 }

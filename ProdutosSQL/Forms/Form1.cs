@@ -44,6 +44,41 @@ namespace ProdutosSQL
             dgvProdutos.Columns["Preco_Desconto"].DefaultCellStyle.Format = "C2";
 
             dgvProdutos.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+            AdicionarBotaoNoGrid("btnDetalhes", "Detalhes", "Ações");
+        }
+
+        private void AdicionarBotaoNoGrid(string nome, string texto, string header)
+        {
+            if (dgvProdutos.Columns[nome] != null)
+                return;
+
+            DataGridViewButtonColumn btn = new DataGridViewButtonColumn
+            {
+                Name = nome,
+                HeaderText = header,
+                Text = texto,
+                UseColumnTextForButtonValue = true
+            };
+
+            dgvProdutos.Columns.Add(btn);
+        }
+
+
+
+        private void dgvProdutos_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0)
+                return;
+
+            var produto = (Produto)dgvProdutos.Rows[e.RowIndex].DataBoundItem;
+
+            if (dgvProdutos.Columns[e.ColumnIndex].Name == "btnDetalhes")
+            {
+                FormEditarExcluirProduto form = new FormEditarExcluirProduto(produto);
+                form.FormClosed += (s, args) => CarregarProdutosNoGrid();
+                form.ShowDialog();
+            }
         }
     }
 }
