@@ -82,9 +82,9 @@ CREATE TABLE Produto (
 
 No arquivo `Conexao.cs`, configure a string de conexão conforme o seu ambiente local:
 
-'''
+```bash
 string connectionString = "server=localhost;database=Controle_Produtos;user=root;password=;";
-'''
+```
 
 >  Se estiver usando o XAMPP ou WAMP, o usuário padrão é `root` e a senha geralmente está vazia.
 
