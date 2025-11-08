@@ -95,7 +95,7 @@
             this.label1.TabIndex = 7;
             this.label1.Text = "Nome do Produto:";
             // 
-            // FormProdutos
+            // FormCadProdutos
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -107,7 +107,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.inputNomeProduto);
             this.Controls.Add(this.label1);
-            this.Name = "FormProdutos";
+            this.Name = "FormCadProdutos";
             this.Text = "FormProdutos";
             this.ResumeLayout(false);
             this.PerformLayout();

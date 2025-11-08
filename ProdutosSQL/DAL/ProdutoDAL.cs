@@ -1,4 +1,5 @@
-﻿using ProdutosSQL.Models;
+﻿using System.Collections.Generic;
+using ProdutosSQL.Models;
 
 namespace ProdutosSQL.DAL
 {
@@ -16,6 +17,11 @@ namespace ProdutosSQL.DAL
         public void Inserir(Produto produto)
         {
             dal.Inserir(produto);
+        }
+
+        public List<Produto> CarregarProdutos()
+        {
+            return dal.Ler<Produto>();
         }
     }
 }

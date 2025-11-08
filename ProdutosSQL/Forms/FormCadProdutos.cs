@@ -1,7 +1,8 @@
-﻿using System;
-using System.Windows.Forms;
-using ProdutosSQL.DAL;
+﻿using ProdutosSQL.DAL;
 using ProdutosSQL.Models;
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace ProdutosSQL
 {
@@ -28,6 +29,7 @@ namespace ProdutosSQL
                 };
 
                 produtoDAL.Inserir(produto);
+                LimparInputs();
                 MessageBox.Show("Produto cadastrado com sucesso!");
             }
             catch (Exception ex)
@@ -35,5 +37,13 @@ namespace ProdutosSQL
                 MessageBox.Show("Erro ao cadastrar: " + ex.Message);
             }
         }
+
+        private void LimparInputs()
+        {
+            inputNomeProduto.Text = "";
+            inputPrecoDesconto.Text = "";
+            inputPrecoNormal.Text = "";
+        }
+
     }
 }
